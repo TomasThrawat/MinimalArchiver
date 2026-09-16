@@ -36,6 +36,7 @@ android {
 
     buildFeatures {
         compose = true
+        aidl = true
     }
 
     packaging {
@@ -55,4 +56,10 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Shizuku — lets the app run shell commands with shell-UID privileges (via a bound
+    // UserService, not the deprecated reflection-based Shizuku.newProcess()) to browse and
+    // manage paths like /data that are otherwise outside the app's sandbox.
+    implementation("dev.rikka.shizuku:api:13.1.5")
+    implementation("dev.rikka.shizuku:provider:13.1.5")
 }

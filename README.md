@@ -7,12 +7,14 @@ Package: `com.minimalarchiver.app`
 ## Features
 - Browse device storage (requires All-files-access permission on Android 11+)
 - View a `.zip` archive's entry list before extracting
-- Extract a `.zip` archive into a folder next to it
-- Select one or more files/folders and create a `.zip` archive from them
+- Long-press any file/folder for actions: compress to `.zip`, extract (zip files only), copy to another path, delete
+- Optional Shizuku mode (toggle button in the top bar): browse restricted paths like `/data` using shell-UID privileges via a bound Shizuku UserService — requires the Shizuku app installed and running, and its permission granted when prompted
+  - In this mode only copy (`cp -r`) and delete (`rm -rf`) are available — no zip/unzip, since AOSP's toybox ships `tar`/`cp`/`rm` but no `zip`/`unzip` applet
 
 ## Scope (minimal, by design)
-- Only `.zip` is supported (via `java.util.zip`, no external native libraries). No `.rar` / `.7z` / `.tar.gz` support.
-- No file rename/move/delete, no search, no thumbnails — pure browse + zip in/out.
+- Only `.zip` is supported for normal storage (via `java.util.zip`, no external native libraries). No `.rar` / `.7z` / `.tar.gz` support.
+- No search, no thumbnails, no rename/move.
+- Shizuku-spawned shell processes aren't explicitly force-killed on unbind in this build (no `destroy()` transaction wired up) — they exit on their own once their command finishes.
 
 ## Build
 CI: `.github/workflows/build-apk.yml` runs `gradle assembleDebug` on every push to `main` and uploads `app-debug.apk` as a build artifact.
