@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme(colorScheme = darkColorScheme()) {
+            MaterialTheme(colorScheme = PureBlackColorScheme) {
                 Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
                     ArchiverScreen()
                 }
@@ -262,6 +262,7 @@ fun ArchiverScreen() {
     showZipEntries?.let { (zipFile, entries) ->
         AlertDialog(
             onDismissRequest = { showZipEntries = null },
+            containerColor = Color.Black,
             title = { Text(zipFile.name) },
             text = {
                 Column(Modifier.heightIn(max = 400.dp).verticalScroll(rememberScrollState())) {
@@ -288,6 +289,7 @@ fun ArchiverScreen() {
         val isZip = target is BrowseTarget.Local && target.file.extension.equals("zip", ignoreCase = true)
         AlertDialog(
             onDismissRequest = { actionMenuFor = null },
+            containerColor = Color.Black,
             title = { Text(target.displayName) },
             text = {
                 Column {
@@ -343,6 +345,7 @@ fun ArchiverScreen() {
         var destPath by remember(target) { mutableStateOf("") }
         AlertDialog(
             onDismissRequest = { copyDialogFor = null },
+            containerColor = Color.Black,
             title = { Text("نسخ ${target.displayName} إلى") },
             text = {
                 OutlinedTextField(
@@ -378,6 +381,7 @@ fun ArchiverScreen() {
         var newName by remember(target) { mutableStateOf(target.displayName) }
         AlertDialog(
             onDismissRequest = { renameDialogFor = null },
+            containerColor = Color.Black,
             title = { Text("إعادة تسمية ${target.displayName}") },
             text = {
                 OutlinedTextField(
@@ -414,6 +418,7 @@ fun ArchiverScreen() {
     deleteConfirmFor?.let { target ->
         AlertDialog(
             onDismissRequest = { deleteConfirmFor = null },
+            containerColor = Color.Black,
             title = { Text("حذف ${target.displayName}؟") },
             text = { Text("مفيش تراجع بعد الحذف.") },
             confirmButton = {
