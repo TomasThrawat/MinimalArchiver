@@ -128,6 +128,7 @@ fun ArchiverScreen() {
     var showZipEntries by remember { mutableStateOf<Pair<File, List<String>>?>(null) }
     var actionMenuFor by remember { mutableStateOf<BrowseTarget?>(null) }
     var copyDialogFor by remember { mutableStateOf<BrowseTarget?>(null) }
+    var renameDialogFor by remember { mutableStateOf<BrowseTarget?>(null) }
     var deleteConfirmFor by remember { mutableStateOf<BrowseTarget?>(null) }
 
     fun ensureShizuku() {
@@ -192,7 +193,7 @@ fun ArchiverScreen() {
                     items(localFiles) { file ->
                         val prefix = when {
                             file.isDirectory -> "📁"
-                            file.extension.equals("zip", ignoreCase = true) -> "🗜"
+                            file.extension.equals("zip", ignoreCase = true) -> "🖜"
                             else -> "📄"
                         }
                         Row(
@@ -301,6 +302,10 @@ fun ArchiverScreen() {
                         }) { Text("فك الضغط") }
                     }
                     TextButton(onClick = {
+                        renameDialogFor = target
+                        actionMenuFor = null
+                    }) { Text("إعادة تسمية") }
+                    TextButton(onClick = {
                         copyDialogFor = target
                         actionMenuFor = null
                     }) { Text("نسخ إلى مسار آخر") }
@@ -355,6 +360,43 @@ fun ArchiverScreen() {
             },
             dismissButton = {
                 TextButton(onClick = { copyDialogFor = null }) { Text("إلغاء") }
+            }
+        )
+    }
+
+    renameDialogFor?.let { target ->
+        var newName by remember(target) { mutableStateOf(target.displayName) }
+        AlertDialog(
+            onDismissRequest = { renameDialogFor = null },
+            title = { Text("إعادة تسمية ${target.displayName}") },
+            text = {
+                OutlinedTextField(
+                    value = newName,
+                    onValueChange = { newName = it },
+                    singleLine = true
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    when (target) {
+                        is BrowseTarget.Local -> {
+                            val result = FileOps.rename(target.file, newName)
+                            statusMsg = if (result.isSuccess) "تم تغيير الاسم" else "فشل: ${result.exceptionOrNull()?.message}"
+                            refreshLocal()
+                        }
+                        is BrowseTarget.Shell -> {
+                            val parent = File(target.fullPath).parent ?: "/"
+                            val newFullPath = if (parent == "/") "/$newName" else "$parent/$newName"
+                            val out = bridge.exec("mv ${shellQuote(target.fullPath)} ${shellQuote(newFullPath)}")
+                            statusMsg = if (out.isBlank()) "تم تغيير الاسم" else "فشل: $out"
+                            shizukuEntries = parseShellListing(bridge.exec(buildListCommand(shizukuPath)))
+                        }
+                    }
+                    renameDialogFor = null
+                }) { Text("تغيير") }
+            },
+            dismissButton = {
+                TextButton(onClick = { renameDialogFor = null }) { Text("إلغاء") }
             }
         )
     }
