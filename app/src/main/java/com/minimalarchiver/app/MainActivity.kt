@@ -181,6 +181,16 @@ fun ArchiverScreen() {
                         modifier = Modifier.padding(horizontal = 8.dp)
                     )
                 }
+                if (mode == BrowseMode.SHIZUKU && shellServiceBinder != null) {
+                    Row(
+                        Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextButton(onClick = {
+                            shizukuPath = "${Environment.getExternalStorageDirectory().path}/Android/data"
+                        }) { Text("Android/data", color = Color.Cyan) }
+                    }
+                }
             }
         }
     ) { padding ->
