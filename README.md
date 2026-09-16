@@ -10,6 +10,7 @@ Package: `com.minimalarchiver.app`
 - Long-press any file/folder for actions: compress to `.zip`, extract (zip files only), rename, copy to another path, delete
 - Optional Shizuku mode (toggle button in the top bar): browse restricted paths like `/data` using shell-UID privileges via a bound Shizuku UserService — requires the Shizuku app installed and running, and its permission granted when prompted
   - In this mode copy (`cp -r`), rename (`mv`), and delete (`rm -rf`) are available — no zip/unzip, since AOSP's toybox ships `tar`/`cp`/`mv`/`rm` but no `zip`/`unzip` applet
+  - Once the shell service is bound, an "Android/data" shortcut jumps straight to `<external storage>/Android/data`, which is otherwise unreadable in Local mode: `MANAGE_EXTERNAL_STORAGE` explicitly excludes `Android/data`/`Android/obb` per Android's scoped-storage docs, but the shell UID isn't subject to that FUSE-level restriction
 
 ## Scope (minimal, by design)
 - Only `.zip` is supported for normal storage (via `java.util.zip`, no external native libraries). No `.rar` / `.7z` / `.tar.gz` support.
