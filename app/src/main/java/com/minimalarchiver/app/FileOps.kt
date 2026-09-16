@@ -21,4 +21,14 @@ object FileOps {
         }
         target
     }
+
+    fun rename(target: File, newName: String): Result<File> = runCatching {
+        if (newName.isBlank() || newName == "." || newName == ".." || newName.contains('/')) {
+            throw IOException("اسم غير صالح")
+        }
+        val dest = File(target.parentFile, newName)
+        if (dest.exists()) throw IOException("في ملف بنفس الاسم بالفعل")
+        if (!target.renameTo(dest)) throw IOException("فشل إعادة تسمية ${target.name}")
+        dest
+    }
 }
